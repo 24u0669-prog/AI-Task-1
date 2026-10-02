@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Customer Churn Classification Dashboard</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #171d24;
+      --line: #2a3440;
+      --text: #e8eef4;
+      --muted: #9aa7b5;
+      --accent: #4f8cff;
+      --good: #3ecf8e;
+      --warn: #f5a524;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(79, 140, 255, 0.16), transparent 26%),
+        radial-gradient(circle at bottom right, rgba(62, 207, 142, 0.10), transparent 28%),
+        linear-gradient(135deg, #07111b 0%, #0e1724 35%, #101b2a 100%);
+      color: var(--text);
+    }
+    .page-shell {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 28px 22px 48px;
+    }
+    header {
+      background: rgba(15, 23, 32, 0.75);
+      border: 1px solid rgba(146, 169, 193, 0.2);
+      border-radius: 24px;
+      padding: 28px 28px 20px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 50px rgba(8, 13, 22, 0.35);
+      margin-bottom: 22px;
+    }
+    .header-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(79, 140, 255, 0.12);
+      border: 1px solid rgba(79, 140, 255, 0.24);
+      color: #dfeaff;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .eyebrow-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4f8cff, #8bb5ff);
+      box-shadow: 0 0 18px rgba(79, 140, 255, 0.9);
+    }
+    h1 {
+      margin: 16px 0 8px;
+      font-size: clamp(28px, 3vw, 46px);
+      font-weight: 750;
+      letter-spacing: -0.04em;
+    }
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 680px;
+      line-height: 1.6;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 180px;
+      background: linear-gradient(135deg, rgba(62, 207, 142, 0.18), rgba(79, 140, 255, 0.14));
+      border: 1px solid rgba(62, 207, 142, 0.35);
+      color: #ddffef;
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-weight: 700;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    main {
+      padding: 0;
+      max-width: 1360px;
+      margin: 0 auto;
+    }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .card {
+      position: relative;
+      background: rgba(15, 23, 32, 0.75);
+      border: 1px solid rgba(146, 169, 193, 0.16);
+      border-radius: 20px;
+      padding: 18px 18px 16px;
+      box-shadow: 0 10px 28px rgba(8, 13, 22, 0.28);
+      overflow: hidden;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(79, 140, 255, 0.9), rgba(62, 207, 142, 0.9));
+      opacity: 0.9;
+    }
+    .kpi-label {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .kpi-value {
+      font-size: clamp(24px, 2vw, 32px);
+      font-weight: 750;
+      margin-top: 10px;
+      letter-spacing: -0.04em;
+    }
+    .kpi-hint {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    h2 {
+      font-size: 16px;
+      margin: 0 0 12px;
+      letter-spacing: -0.02em;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 9px 8px; border-bottom: 1px solid rgba(146, 169, 193, 0.12); text-align: left; }
+    th { color: var(--muted); font-weight: 700; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(62, 207, 142, 0.16), rgba(79, 140, 255, 0.12));
+      color: var(--good);
+      border: 1px solid rgba(62, 207, 142, 0.4);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .notes {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      margin: 12px 0 0;
+    }
+    img {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(146, 169, 193, 0.12);
+      background: rgba(255,255,255,0.02);
+      display: block;
+    }
+    @media (max-width: 900px) {
+      .kpis, .grid-2 { grid-template-columns: 1fr; }
+      .page-shell { padding: 16px 14px 32px; }
+      header { padding: 20px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header>
+      <div class="header-row">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-dot"></span> Customer retention intelligence</div>
+          <h1>Customer Churn Prediction Dashboard</h1>
+          <p class="sub">Predictive retention insights for telecom subscribers across contract, billing, and service behavior.</p>
+        </div>
+        <div class="hero-tag">Target: reduce churn risk</div>
+      </div>
+    </header>
+    <main>
+      <div class="kpis">
+        <div class="card">
+          <div class="kpi-label">Customers</div>
+          <div class="kpi-value">7,043</div>
+          <div class="kpi-hint">21 raw columns after load</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">Observed churn rate</div>
+          <div class="kpi-value">26.5%</div>
+          <div class="kpi-hint">1,869 churn / 5,174 retain</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">Selected model</div>
+          <div class="kpi-value" style="font-size:22px">Logistic Regression</div>
+          <div class="kpi-hint">Highest test F1, then ROC-AUC</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">Best test F1</div>
+          <div class="kpi-value">0.613</div>
+          <div class="kpi-hint">ROC-AUC 0.841</div>
+        </div>
+      </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>Class mix</h2>
+        <div id="pie"></div>
+      </div>
+      <div class="card">
+        <h2>Test-set metrics</h2>
+        <div id="metrics"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>Churn rate by contract</h2>
+        <div id="contract"></div>
+      </div>
+      <div class="card">
+        <h2>5-fold CV F1 (train)</h2>
+        <div id="cv"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>Confusion matrices</h2>
+        <img src="../plots/confusion_matrices.png" alt="Confusion matrices" />
+      </div>
+      <div class="card">
+        <h2>ROC curves (test set)</h2>
+        <img src="../plots/roc_curves.png" alt="ROC curves" />
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>Random Forest — top features</h2>
+        <table>
+          <thead><tr><th>Feature</th><th>Importance</th></tr></thead>
+          <tbody><tr><td>tenure</td><td>0.1318</td></tr><tr><td>TotalCharges</td><td>0.1235</td></tr><tr><td>MonthlyCharges</td><td>0.0973</td></tr><tr><td>Contract_Month-to-month</td><td>0.0886</td></tr><tr><td>Contract_Two year</td><td>0.0469</td></tr><tr><td>OnlineSecurity_No</td><td>0.0430</td></tr><tr><td>TechSupport_No</td><td>0.0378</td></tr><tr><td>InternetService_Fiber optic</td><td>0.0329</td></tr><tr><td>PaymentMethod_Electronic check</td><td>0.0320</td></tr><tr><td>OnlineBackup_No</td><td>0.0190</td></tr><tr><td>Contract_One year</td><td>0.0175</td></tr><tr><td>DeviceProtection_No</td><td>0.0142</td></tr></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h2>Contract breakdown</h2>
+        <table>
+          <thead><tr><th>Contract</th><th>No churn</th><th>Churn</th><th>Rate</th></tr></thead>
+          <tbody><tr><td>Month-to-month</td><td>2220</td><td>1655</td><td>42.7%</td></tr><tr><td>One year</td><td>1307</td><td>166</td><td>11.3%</td></tr><tr><td>Two year</td><td>1647</td><td>48</td><td>2.8%</td></tr></tbody>
+        </table>
+        <p class="notes" style="margin-top:14px">
+          Selected: <span class="badge">Logistic Regression</span><br/>
+          Logistic Regression is typically stronger on recall for the minority churn class.
+          Random Forest is often slightly better on overall accuracy. For a retention campaign,
+          missing a churner (false negative) is more costly, so F1 and recall were prioritized
+          over accuracy.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Responsible AI</h2>
+      <p class="notes">
+        Stratified splits and class_weight="balanced" were used because churn is ~26.5% of the base.
+        customerID was dropped. Gender and SeniorCitizen should be fairness-audited before production.
+        Do not store raw PII in model artifacts.
+      </p>
+    </div>
+    </main>
+  </div>
+  <script>
+    const pie = [{label: "No churn", values: 5174}, {label: "Churn", values: 1869}];
+    Plotly.newPlot("pie", [{
+      type: "pie",
+      labels: ["No churn", "Churn"],
+      values: [5174, 1869],
+      hole: 0.45,
+      marker: { colors: ["#4f8cff", "#f5a524"] }
+    }], {
+      paper_bgcolor: "rgba(0,0,0,0)",
+      plot_bgcolor: "rgba(0,0,0,0)",
+      font: { color: "#e8eef4" },
+      margin: { t: 10, b: 10, l: 10, r: 10 },
+      height: 280,
+      showlegend: true
+    }, {displayModeBar: false, responsive: true});
+
+    Plotly.newPlot("metrics", [
+      {
+        type: "bar",
+        name: "Logistic Regression",
+        x: ["Accuracy", "Precision", "Recall", "F1", "ROC-AUC"],
+        y: [0.7374024130589071, 0.5034364261168385, 0.7834224598930482, 0.6129707112970711, 0.8414063912785139],
+        marker: { color: "#4f8cff" }
+      },
+      {
+        type: "bar",
+        name: "Random Forest",
+        x: ["Accuracy", "Precision", "Recall", "F1", "ROC-AUC"],
+        y: [0.7785663591199432, 0.5748792270531401, 0.6363636363636364, 0.6040609137055838, 0.8346766901754115],
+        marker: { color: "#3ecf8e" }
+      }
+    ], {
+      barmode: "group",
+      paper_bgcolor: "rgba(0,0,0,0)",
+      plot_bgcolor: "rgba(0,0,0,0)",
+      font: { color: "#e8eef4" },
+      yaxis: { range: [0, 1], title: "Score (0–1)" },
+      xaxis: { title: "Metric" },
+      margin: { t: 20, b: 50, l: 50, r: 10 },
+      height: 280,
+      legend: { orientation: "h" }
+    }, {displayModeBar: false, responsive: true});
+
+    Plotly.newPlot("contract", [{
+      type: "bar",
+      x: ["Month-to-month", "One year", "Two year"],
+      y: [42.7, 11.3, 2.8],
+      marker: { color: "#f5a524" }
+    }], {
+      paper_bgcolor: "rgba(0,0,0,0)",
+      plot_bgcolor: "rgba(0,0,0,0)",
+      font: { color: "#e8eef4" },
+      yaxis: { title: "Churn rate (%)" },
+      xaxis: { title: "Contract type" },
+      margin: { t: 20, b: 50, l: 50, r: 10 },
+      height: 280
+    }, {displayModeBar: false, responsive: true});
+
+    Plotly.newPlot("cv", [
+      {
+        type: "bar",
+        name: "F1 mean",
+        x: ["Logistic Regression", "Random Forest"],
+        y: [0.6285819778903436, 0.6169391672795651],
+        error_y: {
+          type: "data",
+          array: [0.02324809654528785, 0.02119018837091931],
+          visible: true
+        },
+        marker: { color: "#4f8cff" }
+      }
+    ], {
+      paper_bgcolor: "rgba(0,0,0,0)",
+      plot_bgcolor: "rgba(0,0,0,0)",
+      font: { color: "#e8eef4" },
+      yaxis: { range: [0, 1], title: "F1 (5-fold mean ± std)" },
+      margin: { t: 20, b: 50, l: 50, r: 10 },
+      height: 280
+    }, {displayModeBar: false, responsive: true});
+  </script>
+</body>
+</html>

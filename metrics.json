@@ -1,0 +1,212 @@
+{
+  "eda": {
+    "n_rows": 7043,
+    "n_cols": 21,
+    "churn_yes": 1869,
+    "churn_no": 5174,
+    "churn_rate": 0.2653698707936959,
+    "train_size": 5634,
+    "test_size": 1409,
+    "contract_churn": [
+      {
+        "Contract": "Month-to-month",
+        "No": 2220,
+        "Yes": 1655,
+        "churn_rate": 0.4270967741935484
+      },
+      {
+        "Contract": "One year",
+        "No": 1307,
+        "Yes": 166,
+        "churn_rate": 0.11269517990495587
+      },
+      {
+        "Contract": "Two year",
+        "No": 1647,
+        "Yes": 48,
+        "churn_rate": 0.02831858407079646
+      }
+    ]
+  },
+  "cv": {
+    "Logistic Regression": {
+      "accuracy": {
+        "mean": 0.7488478347551855,
+        "std": 0.015230762376729911
+      },
+      "precision": {
+        "mean": 0.5173602834518597,
+        "std": 0.018826053879717728
+      },
+      "recall": {
+        "mean": 0.8013377926421403,
+        "std": 0.037932968237479145
+      },
+      "f1": {
+        "mean": 0.6285819778903436,
+        "std": 0.02324809654528785
+      },
+      "roc_auc": {
+        "mean": 0.8459519022873485,
+        "std": 0.012354036058046998
+      }
+    },
+    "Random Forest": {
+      "accuracy": {
+        "mean": 0.7886078981751015,
+        "std": 0.012213749078969636
+      },
+      "precision": {
+        "mean": 0.5945188199701841,
+        "std": 0.02329536269974059
+      },
+      "recall": {
+        "mean": 0.6414715719063546,
+        "std": 0.023781122186797544
+      },
+      "f1": {
+        "mean": 0.6169391672795651,
+        "std": 0.02119018837091931
+      },
+      "roc_auc": {
+        "mean": 0.8374949578016325,
+        "std": 0.010582702837050388
+      }
+    }
+  },
+  "test": {
+    "Logistic Regression": {
+      "accuracy": 0.7374024130589071,
+      "precision": 0.5034364261168385,
+      "recall": 0.7834224598930482,
+      "f1": 0.6129707112970711,
+      "roc_auc": 0.8414063912785139
+    },
+    "Random Forest": {
+      "accuracy": 0.7785663591199432,
+      "precision": 0.5748792270531401,
+      "recall": 0.6363636363636364,
+      "f1": 0.6040609137055838,
+      "roc_auc": 0.8346766901754115
+    }
+  },
+  "selected_model": "Logistic Regression",
+  "feature_importances": [
+    {
+      "feature": "tenure",
+      "importance": 0.1318390242108355
+    },
+    {
+      "feature": "TotalCharges",
+      "importance": 0.12350673636350665
+    },
+    {
+      "feature": "MonthlyCharges",
+      "importance": 0.09729987782126467
+    },
+    {
+      "feature": "Contract_Month-to-month",
+      "importance": 0.08862940474101524
+    },
+    {
+      "feature": "Contract_Two year",
+      "importance": 0.04692614582987446
+    },
+    {
+      "feature": "OnlineSecurity_No",
+      "importance": 0.043014703419138246
+    },
+    {
+      "feature": "TechSupport_No",
+      "importance": 0.037797392969162825
+    },
+    {
+      "feature": "InternetService_Fiber optic",
+      "importance": 0.03286136369490705
+    },
+    {
+      "feature": "PaymentMethod_Electronic check",
+      "importance": 0.03201945991927669
+    },
+    {
+      "feature": "OnlineBackup_No",
+      "importance": 0.01896759501977243
+    },
+    {
+      "feature": "Contract_One year",
+      "importance": 0.01750227536928791
+    },
+    {
+      "feature": "DeviceProtection_No",
+      "importance": 0.014163657928050875
+    },
+    {
+      "feature": "InternetService_DSL",
+      "importance": 0.013945821316132584
+    },
+    {
+      "feature": "OnlineSecurity_Yes",
+      "importance": 0.013886357495601251
+    },
+    {
+      "feature": "PaperlessBilling_Yes",
+      "importance": 0.013782952737307959
+    }
+  ],
+  "classification_reports": {
+    "Logistic Regression": {
+      "No Churn": {
+        "precision": 0.9020556227327691,
+        "recall": 0.7207729468599033,
+        "f1-score": 0.8012889366272825,
+        "support": 1035.0
+      },
+      "Churn": {
+        "precision": 0.5034364261168385,
+        "recall": 0.7834224598930482,
+        "f1-score": 0.6129707112970711,
+        "support": 374.0
+      },
+      "accuracy": 0.7374024130589071,
+      "macro avg": {
+        "precision": 0.7027460244248038,
+        "recall": 0.7520977033764757,
+        "f1-score": 0.7071298239621768,
+        "support": 1409.0
+      },
+      "weighted avg": {
+        "precision": 0.7962475464131396,
+        "recall": 0.7374024130589071,
+        "f1-score": 0.7513024098185537,
+        "support": 1409.0
+      }
+    },
+    "Random Forest": {
+      "No Churn": {
+        "precision": 0.8633165829145729,
+        "recall": 0.8299516908212561,
+        "f1-score": 0.8463054187192118,
+        "support": 1035.0
+      },
+      "Churn": {
+        "precision": 0.5748792270531401,
+        "recall": 0.6363636363636364,
+        "f1-score": 0.6040609137055838,
+        "support": 374.0
+      },
+      "accuracy": 0.7785663591199432,
+      "macro avg": {
+        "precision": 0.7190979049838565,
+        "recall": 0.7331576635924462,
+        "f1-score": 0.7251831662123978,
+        "support": 1409.0
+      },
+      "weighted avg": {
+        "precision": 0.7867547865397143,
+        "recall": 0.7785663591199432,
+        "f1-score": 0.7820048900640685,
+        "support": 1409.0
+      }
+    }
+  }
+}
